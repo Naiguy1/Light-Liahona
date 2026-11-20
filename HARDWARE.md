@@ -1,6 +1,6 @@
 # Liahona hardware — approved Nano design
 
-Design approved by the user on 2026-11-20. Every assignment below is approved for implementation. On 2026-11-20 the user reported wiring verified. No firmware or motion test results have been supplied. Controller: classic 5 V Nano-style USB-C board, confirmed ATmega328P from the supplied chip photographs; bootloader selection remains to be established by upload. Do not apply this power plan to a Nano ESP32 or another 3.3 V Nano variant.
+Design approved by the user on 2026-11-20. Every assignment below is approved for implementation. On 2026-11-20 the user reported wiring verified. Heartbeat and four-channel raw sensor results have been supplied; no motion tests have been reported. Controller: classic 5 V Nano-style USB-C board, confirmed ATmega328P from the supplied chip photographs; uploads confirmed using ATmega328P (Old Bootloader). Do not apply this power plan to a Nano ESP32 or another 3.3 V Nano variant.
 
 ## Approved pin map
 
@@ -22,7 +22,7 @@ Keep D0/D1 available for serial. Use printed pin names, not physical pin counts 
 
 ## Light sensors and switch
 
-For each direction: **5V → photoresistor → signal junction → 10 kΩ resistor → GND**. Connect that junction to the assigned analog input. More light is expected to raise the junction voltage with this topology; confirm experimentally. Photoresistors and resistors are nonpolarized.
+For each direction: **5V → photoresistor → signal junction → fixed resistor → GND**. Connect that junction to the assigned analog input. Use 10 kΩ for E/N/W and 6.5 kΩ for South. More light is expected to raise the junction voltage with this topology; confirm experimentally. Photoresistors and resistors are nonpolarized.
 
 The user reports a 10 kΩ resistor in breadboard row 42 connected to ground. This does not establish which end is the signal junction. Connect the sensor and analog wire to the resistor's ungrounded end. Five-hole groups on opposite sides of the breadboard trench are separate; check rail continuity across any split.
 
@@ -30,8 +30,8 @@ Home switch: D6 to switch COM, switch NO to GND. An external 10 kΩ resistor fro
 
 ## Capacitors and available parts
 
-- Four photoresistors; four 10 kΩ sensor resistors; one 10 kΩ home pull-up.
-- Planned inventory: eight 10 kΩ resistors, two 100 kΩ resistors, one 470 µF capacitor rated at least 10 V, five 100 nF capacitors. Actual markings still need checking.
+- Installed sensor plan: three 10 kΩ resistors (E/N/W), one 6.5 kΩ (South). All three available 10 kΩ parts are allocated to sensors; no spare 10 kΩ home pull-up is confirmed.
+- User-reported additional resistors: 5.6 kΩ, 3.3 kΩ and four 220 Ω. Capacitors: 100 nF and 470 µF; verify quantities, types and voltage ratings. Earlier inventory estimates are superseded.
 - Optional sensor filters: one 100 nF ceramic from each analog junction to GND, near the input. Omit during the first simple sensor wiring check if not available.
 - Driver supply: 470 µF electrolytic and 100 nF ceramic in parallel across driver +5V and GND, near the driver. Electrolytic positive goes to +5V; its marked negative goes to GND. These do not replace any boost-module capacitors required by its manufacturer.
 - 100 nF = 0.1 µF, not 100 µF. Do not substitute an unidentified electrolytic for a 100 nF filter. A polarized sensor capacitor, if specifically selected, would have positive at the signal node and negative at GND; leakage and suitability need checking.
@@ -57,3 +57,5 @@ The ESP32 pin plan and `Liahona_Proposed_Wiring.png` are historical references, 
 - [Official classic Nano documentation](https://docs.arduino.cc/hardware/nano)
 - [Official Nano pinout](https://docs.arduino.cc/resources/pinouts/A000005-full-pinout.pdf)
 - [Official Nano power specifications](https://store.arduino.cc/products/arduino-nano)
+
+See [sensor-calibration.md](docs/sensor-calibration.md) for measured endpoints. Home pull-up implementation and switch function still need confirmation; use the Nano internal pull-up in a separate home-input milestone if no external pull-up is installed.
