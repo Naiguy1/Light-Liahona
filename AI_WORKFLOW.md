@@ -25,8 +25,10 @@ Use the approved Nano design in README.md and HARDWARE.md. Read those files, doc
 
 ## Build and upload
 
-For a confirmed ATmega328P Nano: Arduino IDE → Arduino AVR Boards → Arduino Nano → matching processor/bootloader → actual port → Verify → Upload → Serial Monitor at sketch baud. The first Nano sketch has not yet been implemented. Current ESP-IDF files are not an uploadable Nano project.
+For a confirmed ATmega328P Nano: Arduino IDE → Arduino AVR Boards → Arduino Nano → matching processor/bootloader → actual port → Verify → Upload → Serial Monitor at sketch baud. Current sketch: firmware/liahona/liahona.ino. Select ATmega328P (Old Bootloader), confirmed by successful user uploads. Heartbeat and raw sensor measurements are user verified; normalized output is pending verification. Current ESP-IDF files are not an uploadable Nano project.
 
 ## Task prompt
 
 > Read README.md, HARDWARE.md, AI_WORKFLOW.md and relevant source. Use the approved classic Nano assignments. Make one narrow change: [behavior]. Keep the motor disabled unless this task involves motion. Explain the diff, assumptions, how to build/upload, and the serial/hardware checks. Distinguish design approval from bench verification.
+
+Measured endpoints and installed resistor values are in docs/sensor-calibration.md. Keep normalization verification separate from motor milestones in docs/motor-bringup.md.

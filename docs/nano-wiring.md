@@ -8,8 +8,8 @@ Current approved design, 2026-11-20. Use [HARDWARE.md](../HARDWARE.md) for power
 | --- | --- |
 | Photoresistor leg 1 | Nano 5V sensor rail |
 | Photoresistor leg 2 | Its own signal junction |
-| 10 kΩ resistor end 1 | Same signal junction |
-| 10 kΩ resistor end 2 | Common GND |
+| Fixed resistor end 1 | Same signal junction |
+| Fixed resistor end 2 | Common GND |
 | Optional 100 nF filter | Between that junction and GND |
 
 | Signal junction | Nano input |
@@ -40,3 +40,5 @@ Nano 5V → 10 kΩ pull-up → D6 junction → switch COM. Switch NO → GND. Re
 | 100 nF ceramic | Driver supply +5V to GND |
 
 Initial Nano power is USB. Future two-AA boosted supply integration requires load testing and USB/external-power isolation review for the actual clone. The Nano must not supply coil current through GPIO or its onboard regulator. The previous ESP32 wiring image is superseded; do not use it for Nano wiring.
+
+Actual sensor resistors: E/N/W = 10 kΩ each; South = 6.5 kΩ. Earlier four-identical-resistor plan is superseded. No spare external 10 kΩ home pull-up is confirmed; resolve using D6 INPUT_PULLUP in the home-switch milestone and record the installed arrangement.

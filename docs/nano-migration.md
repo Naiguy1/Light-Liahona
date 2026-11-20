@@ -25,3 +25,7 @@ Approved 2026-11-20: migrate the design to a classic 5 V Nano-style USB-C board 
 | Deliverables | Regenerate any physical wiring illustration and printable controller mount when their implementation is requested |
 
 The existing ESP32 scaffold remains unchanged in this documentation-only commit. No Nano build, upload or hardware result is claimed. See AI_WORKFLOW.md for milestones and README.md for planned Arduino IDE instructions.
+
+## Progress update, 2026-11-20
+
+The prior implementation checklist above is historical planning. Heartbeat and raw four-sensor uploads are user verified using ATmega328P (Old Bootloader). firmware/liahona/liahona.ino now implements normalized serial readings, pending verification. The legacy CMake/main files remain separate. Motor and home input work is still pending; see motor-bringup.md.
