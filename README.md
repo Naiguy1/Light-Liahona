@@ -1,51 +1,36 @@
-# Liahona ESP-IDF Firmware
+# Liahona firmware
 
-Starter firmware for the Liahona light-seeking device. This scaffold only starts the ESP32 and prints a serial message. It does not configure GPIO, read sensors, operate the home switch, or drive the stepper.
+An offline, battery-powered pointer that turns toward a dominant horizontal light direction. The controller design has migrated to a classic 5 V Arduino Nano-style board with USB-C. The user approved the Nano pin assignments on 2026-11-20. The supplied chip photographs confirm ATmega328P (ATMEGA328P-AU). Bootloader selection remains to be confirmed by upload.
 
-## Hardware recorded so far
+## Project status
 
-- 38-pin ESP32 development board (ESP32-WROOM-32)
-- Four photoresistors, arranged E / N / W / S
-- Home switch
-- 28BYJ-48 stepper motor with ULN2003 driver board
+This change updates documentation only. The checked-in `main/main.c` and CMake files are the original ESP32 / ESP-IDF serial startup scaffold. They are not Nano firmware. There is no Arduino sketch yet, and no Nano build, upload, sensor reading, or motor behavior has been demonstrated. Wiring was reported verified by the user on 2026-11-20.
 
-GPIO assignments and wiring details are intentionally left open. See [docs/hardware-template.md](docs/hardware-template.md) and fill it from the actual wiring before adding hardware code.
+The next firmware change should add only a Nano serial heartbeat. Subsequent changes bring up one subsystem at a time. Approved assignments authorize implementation; they do not certify physical wiring.
 
-## Development setup
+## Documentation
 
-1. Install ESP-IDF for the classic ESP32 target and open a terminal where the ESP-IDF environment is available.
-2. From this repository root, select the target once:
+- [HARDWARE.md](HARDWARE.md): approved pin map, sensors, power and parts.
+- [AI_WORKFLOW.md](AI_WORKFLOW.md): development rules and milestones.
+- [Nano wiring reference](docs/nano-wiring.md): connection-by-connection wiring.
+- [Hardware verification worksheet](docs/hardware-template.md): measured wiring and observations.
+- [Migration notes](docs/nano-migration.md): firmware, tooling and enclosure changes still required.
 
-   ```sh
-   idf.py set-target esp32
-   ```
+## Planned Arduino development setup
 
-3. Build:
+1. The supplied photographs confirm ATmega328P on the purchased board. Confirm bootloader selection when uploading. A Nano-shaped clone is not sufficient to identify its processor or bootloader.
+2. For the confirmed ATmega328P, install Arduino IDE and the Arduino AVR Boards package. Record versions here when installed: IDE **TBD**, AVR core **TBD**.
+3. Select Arduino Nano, the processor/bootloader matching the board, and its actual serial port. The USB-C connector does not identify the USB serial chip or guarantee that a driver is required.
+4. Once an Arduino sketch exists, open it, select Verify, then Upload. Open Serial Monitor at the baud rate specified by that sketch.
 
-   ```sh
-   idf.py build
-   ```
+These are planned steps: there is currently no Nano sketch to build or flash. `idf.py` builds only the legacy ESP32 scaffold and must not be used for the Nano.
 
-4. Flash and open the serial monitor, replacing `PORT` with the board's serial port:
+## First acceptance check
 
-   ```sh
-   idf.py -p PORT flash monitor
-   ```
+The planned heartbeat sketch should print `Liahona Nano ready` once, then a periodic heartbeat. These messages are acceptance criteria, not current output. Keep the motor disconnected. Confirm reliable startup before adding the East sensor on A0.
 
-   Examples: `COM5` on Windows or `/dev/ttyUSB0` on Linux. The port name depends on the USB-to-serial adapter and operating system.
+## References
 
-To leave the serial monitor, press `Ctrl+` then `]`.
-
-## Expected startup output
-
-After the ESP-IDF boot messages, the application should print a line similar to:
-
-```text
-I (..) main: Liahona firmware scaffold ready; no hardware outputs configured.
-```
-
-The timestamp varies. The motor should remain still, and no sensor or switch pins should be configured by this starter.
-
-## Development sequence
-
-Make one hardware-facing change at a time. Before enabling a peripheral, record its pin and wiring in the hardware worksheet. Build and flash after each change, then check the serial output and the specific hardware behavior described for that change. Keep pin choices grounded in the assembled wiring and ESP32 board documentation.
+- [Classic Nano hardware documentation](https://docs.arduino.cc/hardware/nano)
+- [Official Nano pinout](https://docs.arduino.cc/resources/pinouts/A000005-full-pinout.pdf)
+- [Arduino IDE](https://docs.arduino.cc/software/ide/)
