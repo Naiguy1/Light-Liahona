@@ -17,7 +17,10 @@
         "kind": "build",
         "isDefault": true
       },
-      "problemMatcher": []
+      "problemMatcher": [],
+      "linux": {
+        "command": "${workspaceFolder}/bin/arduino-cli"
+      }
     },
     {
       "label": "Nano: Upload motor jog",
@@ -35,7 +38,10 @@
       ],
       "dependsOn": "Nano: Build motor jog",
       "dependsOrder": "sequence",
-      "problemMatcher": []
+      "problemMatcher": [],
+      "linux": {
+        "command": "${workspaceFolder}/bin/arduino-cli"
+      }
     },
     {
       "label": "Nano: Serial monitor",
@@ -52,6 +58,9 @@
       "presentation": {
         "focus": true,
         "panel": "dedicated"
+      },
+      "linux": {
+        "command": "${workspaceFolder}/bin/arduino-cli"
       }
     }
   ],

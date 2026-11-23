@@ -1,6 +1,6 @@
 # Liahona hardware — approved Nano design
 
-Design approved by the user on 2026-11-20. Every assignment below is approved for implementation. On 2026-11-20 the user reported wiring verified. Heartbeat and four-channel raw sensor results have been supplied; no motion tests have been reported. Controller: classic 5 V Nano-style USB-C board, confirmed ATmega328P from the supplied chip photographs; uploads confirmed using ATmega328P (Old Bootloader). Do not apply this power plan to a Nano ESP32 or another 3.3 V Nano variant.
+Design approved by the user on 2026-11-20. Every assignment below is approved for implementation. On 2026-11-20 the user reported wiring verified. Heartbeat and four-channel raw sensor results have been supplied; smooth unloaded motor jogs and stop/release are user verified. Controller: classic 5 V Nano-style USB-C board, confirmed ATmega328P from the supplied chip photographs; uploads confirmed using ATmega328P (Old Bootloader). Do not apply this power plan to a Nano ESP32 or another 3.3 V Nano variant.
 
 ## Approved pin map
 
@@ -63,6 +63,10 @@ See [sensor-calibration.md](docs/sensor-calibration.md) for measured endpoints. 
 ## Current bench arrangement — 2026-11-23 (supersedes earlier power/home assumptions)
 
 - The damaged IN1 board is set aside; user obtained female jumper cables and is using the intact spare ULN2003. Original mapping D2/D3/D4/D5 → IN1/IN2/IN3/IN4 applies; no channel-5 reroute.
-- Nano USB-fed 5V → breadboard positive rail → sensor dividers and driver VCC. Common GND joins Nano, sensor resistors and driver. The 470 µF capacitor is parallel across the driver supply, positive to +5V and striped negative to GND. Connect it near the driver supply wiring. Boost/battery supply stays disconnected. User reports assembly complete; no motor results supplied yet.
+- Nano USB-fed 5V → breadboard positive rail → sensor dividers and driver VCC. Common GND joins Nano, sensor resistors and driver. The 470 µF capacitor is parallel across the driver supply, positive to +5V and striped negative to GND. Connect it near the driver supply wiring. Boost/battery supply stays disconnected. User reports assembly complete; smooth unloaded jogs and stop/release have been reported.
 - USB, cable and clone-board current capacity are unverified. Stop testing on resets, USB disconnects or heating; use an adequately rated separate regulated motor supply if needed. When using a separate supply with Nano on USB, join grounds and keep the positive rails separate.
 - No home switch is installed. D6 is reserved but unused. The ordinary switch is for main power; its installed placement is not confirmed. A manual-zero pushbutton or automatic home sensor is a future choice, not an existing feature.
+
+## Motor calibration and manual reference — 2026-11-23
+
+User reports `f` CCW and `r` CW viewed from the shaft end, and 32 × 128-half-step jogs per output revolution. Working calibration: 4096 half-steps/revolution. No hardware home switch or zero button is installed; manual zero is a serial `z` command at the East reference. D6 remains unused. The new numeric positioning code is pending hardware validation; full assembled pointer travel and loaded behavior remain unknown. See [manual-position.md](docs/manual-position.md).

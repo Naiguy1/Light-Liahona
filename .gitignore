@@ -11,3 +11,6 @@ sdkconfig.old
 # Python cache
 __pycache__/
 *.py[cod]
+
+# Project-local Arduino CLI installed on the laptop
+/bin/

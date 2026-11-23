@@ -30,3 +30,5 @@ The approved design is in [HARDWARE.md](../HARDWARE.md); this worksheet records 
 | TBD | TBD | TBD | TBD | TBD |
 
 Current motor bench arrangement (2026-11-23): intact spare ULN2003, D2–D5 → IN1–IN4, Nano USB-fed 5V supply and common GND. Motor jog results and supply capacity remain unverified. See vscodium.md.
+
+2026-11-23 user report: smooth unloaded f/r jogs and stop/release; f=CCW, r=CW viewed from shaft end. 32 jogs ×128 half-steps per revolution; use 4096 as working calibration. Serial manual-zero/numeric-position tests and assembled clearance remain pending.

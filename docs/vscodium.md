@@ -1,4 +1,6 @@
-# VSCodium: motor jog milestone
+# VSCodium: motor control workflow
+
+**Current firmware:** manual zero and angle commands extend this same sketch. Follow [manual-position.md](manual-position.md) for the current protocol, expected output and acceptance checks. The initial jog procedure below records the prior milestone.
 
 VSCodium edits the source; Arduino CLI compiles, uploads and opens the serial port. No Arduino editor extension is required. The pure C stepping module is `firmware/motor_jog/jog.c`; `arduino_bridge.cpp` supplies Arduino pin/serial calls and setup()/loop(). The minimal `.ino` satisfies Arduino's sketch-folder naming convention.
 
@@ -29,7 +31,7 @@ arduino-cli upload --fqbn arduino:avr:nano:cpu=atmega328old --port PORT --input-
 arduino-cli monitor --port PORT --config baudrate=115200
 ```
 
-Replace **PORT** in both commands with the actual result from `board list`: Windows example `COM3`, Linux example `/dev/ttyUSB0`, macOS example `/dev/cu.usbserial-...`. This laptop's port has not been identified. Compile first: `upload` does not compile. Use Ctrl+C to close the monitor before another upload. A busy/access-denied port usually means another monitor or IDE still has it open.
+Replace **PORT** in both commands with the actual result from `board list`: Windows example `COM3`, Linux example `/dev/ttyUSB0`, macOS example `/dev/cu.usbserial-...`. The laptop's verified port is `/dev/ttyUSB0`; it may change after reconnecting. Compile first: `upload` does not compile. Use Ctrl+C to close the monitor before another upload. A busy/access-denied port usually means another monitor or IDE still has it open.
 
 ## VSCodium task menu
 
@@ -39,11 +41,11 @@ Once Arduino CLI and the AVR core are installed, use **Terminal → Run Task**:
 - **Nano: Upload motor jog**: builds first, then prompts for your actual serial port.
 - **Nano: Serial monitor**: prompts for the port and opens the 115200-baud terminal. Click the terminal and type a command; press Enter if needed. Close with Ctrl+C before uploading.
 
-These tasks are checked into `.vscode/tasks.json` and use no editor extension. They build only the motor-jog sketch. The CLI must be in the PATH seen by VSCodium; restart the editor after installing it if needed.
+These tasks are checked into `.vscode/tasks.json` and use no editor extension. They build only the motor-jog sketch. On Linux, tasks use `${workspaceFolder}/bin/arduino-cli`, matching the laptop installation. Other platforms use `arduino-cli` on PATH. If the editor cannot access the serial device, use a regular host terminal.
 
 ## Serial commands and acceptance checks
 
-Startup:
+Initial jog milestone startup (superseded by manual-position.md):
 
 ```text
 Liahona motor jog ready; coils OFF
