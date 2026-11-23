@@ -131,6 +131,7 @@ static void commands(void) {
     assert(parse(&p, "r\n").kind == COMMAND_REVERSE);
     assert(parse(&p, "z\n").kind == COMMAND_ZERO);
     assert(parse(&p, "p\n").kind == COMMAND_POSITION);
+    assert(parse(&p, "l\n").kind == COMMAND_LIGHT);
     assert(parse(&p, "?\n").kind == COMMAND_HELP);
     c = parse(&p, "360\n");
     assert(c.kind == COMMAND_ANGLE && c.degrees == 360);
