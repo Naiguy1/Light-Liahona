@@ -1,0 +1,65 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Nano: Build motor jog",
+      "type": "process",
+      "command": "arduino-cli",
+      "args": [
+        "compile",
+        "--fqbn",
+        "arduino:avr:nano:cpu=atmega328old",
+        "--build-path",
+        "${workspaceFolder}/build/motor_jog",
+        "${workspaceFolder}/firmware/motor_jog"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Nano: Upload motor jog",
+      "type": "process",
+      "command": "arduino-cli",
+      "args": [
+        "upload",
+        "--fqbn",
+        "arduino:avr:nano:cpu=atmega328old",
+        "--port",
+        "${input:nanoPort}",
+        "--input-dir",
+        "${workspaceFolder}/build/motor_jog",
+        "${workspaceFolder}/firmware/motor_jog"
+      ],
+      "dependsOn": "Nano: Build motor jog",
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "Nano: Serial monitor",
+      "type": "process",
+      "command": "arduino-cli",
+      "args": [
+        "monitor",
+        "--port",
+        "${input:nanoPort}",
+        "--config",
+        "baudrate=115200"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "focus": true,
+        "panel": "dedicated"
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "nanoPort",
+      "type": "promptString",
+      "description": "Nano serial port from arduino-cli board list (e.g. COM3 or /dev/ttyUSB0)"
+    }
+  ]
+}

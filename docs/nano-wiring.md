@@ -21,9 +21,9 @@ Current approved design, 2026-11-20. Use [HARDWARE.md](../HARDWARE.md) for power
 
 All four dividers share supply and ground, but their signal junctions remain separate.
 
-## Home switch
+## Position reference
 
-Nano 5V → 10 kΩ pull-up → D6 junction → switch COM. Switch NO → GND. Released is HIGH; pressed is LOW. Verify switch terminals electrically rather than inferring them from location.
+No home switch is installed. Leave D6 unused. A main power switch is not a position sensor.
 
 ## Motor and power
 
@@ -33,12 +33,16 @@ Nano 5V → 10 kΩ pull-up → D6 junction → switch COM. Switch NO → GND. Re
 | Nano D3 | ULN2003 IN2 |
 | Nano D4 | ULN2003 IN3 |
 | Nano D5 | ULN2003 IN4 |
-| Verified motor supply +5V | ULN2003 board power + |
-| Motor supply GND | ULN2003 board power − and Nano GND |
+| Nano 5V rail (current bench test) | ULN2003 board power + |
+| Nano GND / breadboard ground rail | ULN2003 board power − and Nano GND |
 | Motor five-wire plug | ULN2003 motor socket |
 | 470 µF capacitor + / − | Driver supply +5V / GND |
 | 100 nF ceramic | Driver supply +5V to GND |
 
-Initial Nano power is USB. Future two-AA boosted supply integration requires load testing and USB/external-power isolation review for the actual clone. The Nano must not supply coil current through GPIO or its onboard regulator. The previous ESP32 wiring image is superseded; do not use it for Nano wiring.
+Current Nano power is USB and the driver shares that 5V rail; its current capacity is unverified. Future two-AA boosted supply integration requires load testing and USB/external-power isolation review for the actual clone. Never supply coil current through a GPIO; the current USB-fed rail arrangement is not approval to drive the motor from the onboard VIN regulator. The previous ESP32 wiring image is superseded; do not use it for Nano wiring.
 
-Actual sensor resistors: E/N/W = 10 kΩ each; South = 6.5 kΩ. Earlier four-identical-resistor plan is superseded. No spare external 10 kΩ home pull-up is confirmed; resolve using D6 INPUT_PULLUP in the home-switch milestone and record the installed arrangement.
+Actual sensor resistors: E/N/W = 10 kΩ each; South = 6.5 kΩ. Earlier four-identical-resistor plan is superseded. No home switch is installed; D6 remains unused.
+
+## Current motor bench test (2026-11-23)
+
+This supersedes the separate-motor-supply arrangement above for the current test: intact spare driver; Nano 5V powers the positive breadboard rail, sensors and driver VCC; Nano/driver/sensor grounds are common. 470 µF capacitor across supply, positive to +5V. Boost and batteries disconnected. Available USB current is unverified. D2–D5 → IN1–IN4; D6 unused because no home switch is installed. See [VSCodium motor instructions](vscodium.md) before applying motor commands.

@@ -12,7 +12,7 @@ The approved design is in [HARDWARE.md](../HARDWARE.md); this worksheet records 
 | ULN2003 IN2 | D3 | TBD | User reported, 2026-11-20 |
 | ULN2003 IN3 | D4 | TBD | User reported, 2026-11-20 |
 | ULN2003 IN4 | D5 | TBD | User reported, 2026-11-20 |
-| Home | D6 | Released HIGH / pressed LOW: TBD | User reported, 2026-11-20 |
+| Optional home / zero | D6 | No switch installed; unused | Not applicable |
 | Sensor / pull-up rail | 5V | Measured voltage TBD | User reported, 2026-11-20 |
 | Common return | GND | Continuity TBD | User reported, 2026-11-20 |
 
@@ -28,3 +28,5 @@ The approved design is in [HARDWARE.md](../HARDWARE.md); this worksheet records 
 | Date | One change | Build/upload result | Serial output | Measured hardware behavior |
 | --- | --- | --- | --- | --- |
 | TBD | TBD | TBD | TBD | TBD |
+
+Current motor bench arrangement (2026-11-23): intact spare ULN2003, D2–D5 → IN1–IN4, Nano USB-fed 5V supply and common GND. Motor jog results and supply capacity remain unverified. See vscodium.md.

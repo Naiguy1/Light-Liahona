@@ -29,3 +29,5 @@ The existing ESP32 scaffold remains unchanged in this documentation-only commit.
 ## Progress update, 2026-11-20
 
 The prior implementation checklist above is historical planning. Heartbeat and raw four-sensor uploads are user verified using ATmega328P (Old Bootloader). firmware/liahona/liahona.ino now implements normalized serial readings, pending verification. The legacy CMake/main files remain separate. Motor and home input work is still pending; see motor-bringup.md.
+
+2026-11-23: standalone firmware/motor_jog adds a C stepping controller and Arduino C++ bridge; target build and native controller checks pass. Motor hardware verification remains pending. VSCodium CLI/tasks instructions are in vscodium.md. No home switch is installed; D6 is unused.
