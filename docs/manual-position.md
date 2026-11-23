@@ -1,5 +1,8 @@
 # Manual zero and angle positioning
 
+**Current operation:** see [README](../README.md): `sh run.sh` uploads and opens the monitor; `z` sets East, `t` starts tracking, `s` stops, optional `c` saves calibration. The milestone-specific instructions below are historical; current implementation/checks are in [development.md](development.md).
+
+
 This milestone extends the existing `firmware/motor_jog` sketch. It uses no sensor tracking and no home switch. All wiring remains D2/D3/D4/D5 → intact ULN2003 IN1/IN2/IN3/IN4; D6 is unused.
 
 ## Measured calibration

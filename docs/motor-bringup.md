@@ -1,5 +1,8 @@
 # Motor bring-up
 
+**Current operation:** see [README](../README.md): `sh run.sh` uploads and opens the monitor; `z` sets East, `t` starts tracking, `s` stops, optional `c` saves calibration. The milestone-specific instructions below are historical; current implementation/checks are in [development.md](development.md).
+
+
 Current milestone: [manual zero and angle positioning](manual-position.md) in the existing motor_jog sketch. Unloaded jogs and direction are user verified; this position-control extension is pending verification. The intact spare ULN2003 uses D2 → IN1, D3 → IN2, D4 → IN3 and D5 → IN4. No home switch is installed; D6 remains unused. The on/off switch controls main power, not homing.
 
 1. Build/upload the jog sketch; leave shaft unloaded and initialize with coils off.

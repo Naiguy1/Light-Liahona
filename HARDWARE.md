@@ -72,3 +72,7 @@ See [sensor-calibration.md](docs/sensor-calibration.md) for measured endpoints. 
 User reports `f` CCW and `r` CW viewed from the shaft end, and 32 × 128-half-step jogs per output revolution. Working calibration: 4096 half-steps/revolution. No hardware home switch or zero button is installed; manual zero is a serial `z` command at the East reference. D6 remains unused. The user verified manual zero and cardinal-angle positioning, including operation at a 2 ms interval; full assembled pointer travel and loaded behavior remain unknown. See [manual-position.md](docs/manual-position.md).
 
 User confirmed the sensor calibration on 2026-11-23. Keep the recorded endpoints; no recalibration requested. The new diagnostic light-angle readout reuses A0–A3 and does not move the motor.
+
+## General firmware
+
+The current firmware uses the same pins, verified default endpoints and 2 ms speed. Optional serial c calibration saves sensor ranges in EEPROM without source edits; z/t/s provide manual zero, opt-in tracking and stop. No home switch is required or assumed. Final light-angle accuracy remains pending the housing, and automatic tracking/EEPROM behavior still require a hardware check. User-verified sensor and manual positioning results remain valid.

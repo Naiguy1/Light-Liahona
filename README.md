@@ -1,52 +1,67 @@
-# Liahona firmware
+# Light Liahona
 
-An offline, battery-powered pointer that turns toward a dominant horizontal light direction. The controller design has migrated to a classic 5 V Arduino Nano-style board with USB-C. The user approved the Nano pin assignments on 2026-11-20. The supplied chip photographs confirm ATmega328P (ATMEGA328P-AU). User confirmed uploads work with ATmega328P (Old Bootloader).
+Arduino Nano (ATmega328P, old bootloader), four light sensors and a 28BYJ-48 motor through an intact ULN2003 driver. The firmware includes the verified sensor calibration, 4096 half-steps/revolution and 2 ms stepping. You do not need to edit source files.
 
-## Project status
+## Flash and connect
 
-User reports successful heartbeat and four-channel raw sensor tests using **ATmega328P (Old Bootloader)**. Current Arduino sketch: [firmware/liahona/liahona.ino](firmware/liahona/liahona.ino), which provides standalone endpoint-normalized readings. The user has verified the calibration. Sensor calibration remains a separate sketch. A standalone motor-jog milestone is now available; see below.
+From this project folder on your Linux laptop, close any existing serial monitor with **Ctrl+C**, then run:
 
-The root CMake files and main/ component are historical ESP32 scaffolding, not the Nano project (the old main.c has since been removed). Open the Arduino sketch directly.
+```sh
+sh run.sh
+```
 
-## Documentation
+This builds, uploads and opens the serial monitor at 115200 baud. It uses `bin/arduino-cli` if installed there, otherwise the CLI on PATH. With one USB serial device connected, it selects the port automatically. If multiple devices are connected, specify the Nano: `sh run.sh /dev/ttyUSB0`.
 
-- [HARDWARE.md](HARDWARE.md): approved pin map, sensors, power and parts.
-- [AI_WORKFLOW.md](AI_WORKFLOW.md): development rules and milestones.
-- [Nano wiring reference](docs/nano-wiring.md): connection-by-connection wiring.
-- [Hardware verification worksheet](docs/hardware-template.md): measured wiring and observations.
-- [Migration notes](docs/nano-migration.md): firmware, tooling and enclosure changes still required.
+In VSCodium the same action is **Ctrl+Shift+B**, or **Tasks: Run Task → Liahona: Upload and monitor**.
 
-## Build, upload and check
+One-time setup, if needed: [Arduino CLI](https://docs.arduino.cc/arduino-cli/installation/), then `./bin/arduino-cli core update-index` and `./bin/arduino-cli core install arduino:avr@1.8.6`. No extra libraries are needed; EEPROM is included with the AVR core.
 
-Install Arduino AVR Boards in Arduino IDE. Open `firmware/liahona/liahona.ino` (folder and sketch names match). Select Arduino Nano → **ATmega328P (Old Bootloader)** → current COM port. Close Serial Monitor before Verify / Upload, then reopen it at **115200 baud**.
+## Use it
 
-Expect the startup line `Liahona normalized sensor test; motor power disconnected` and labeled E/N/W/S raw values and percentages every 250 ms. No motor or switch code is enabled. IDE/core versions remain TBD.
+Keep the shaft unloaded for the first tracking test; the printed mechanism's travel clearance is not yet established.
 
-- [Measured endpoints and sensor checks](docs/sensor-calibration.md)
-- [Motor bring-up milestones](docs/motor-bringup.md)
+1. Align the shaft reference/pointer with the East sensor (use the existing jog commands if needed; do not force the geared shaft).
+2. Type **`z`**, Enter: record East zero without moving.
+3. Type **`t`**, Enter: start following the light.
+4. Type **`s`** to stop. This also clears zero, so use `z` again before restarting.
 
-`idf.py` is only for the historical ESP32 scaffold and must not be used for the Nano.
+No motion starts automatically on boot. Startup prints `Liahona ready; coils OFF; zero required` and whether it loaded built-in or saved calibration. Tracking prints `Tracking ON; s stops`, then `Tracking target: ... deg` when it moves. It checks the light every 250 ms while idle, uses the shortest route, and ignores changes of 5 degrees or less. Weak/balanced directional readings hold the current position; they do not return the pointer to East. Coils release after a completed move.
 
-## References
+## Optional calibration later — no source edits
 
-- [Classic Nano hardware documentation](https://docs.arduino.cc/hardware/nano)
-- [Official Nano pinout](https://docs.arduino.cc/resources/pinouts/A000005-full-pinout.pdf)
-- [Arduino IDE](https://docs.arduino.cc/software/ide/)
+Your verified defaults are already built in. After mounting the sensors, you can optionally type **`c`**, Enter, while idle:
 
-## Motor jog in VSCodium
+- For 30 seconds, cover each sensor and then illuminate each using the same light distance.
+- The motor stays off. Each sensor must see at least a 100-count raw range.
+- Valid calibration is saved in EEPROM for future power-ups. Invalid/cancelled calibration keeps the prior settings. **`s`** cancels.
+- Watch for `Calibration saved`. Afterward align with East, then use `z` and `t`.
 
-Follow [docs/vscodium.md](docs/vscodium.md) for Arduino CLI installation, compile/upload commands and serial checks. Open `firmware/motor_jog/motor_jog.ino` for the separate motor milestone. Most stepping logic is C (`jog.c`); the Arduino bridge is C++ (`arduino_bridge.cpp`). No extra motor libraries are required.
+Calibration is stored; physical position and tracking mode are not. After power-up/reset, manual realignment and zero are still required. No home switch is installed.
 
-On the intact spare ULN2003 board, D2–D5 connect to IN1–IN4. The user now powers driver VCC and the sensors from the Nano USB-fed 5V rail, with common GND and a 470 µF supply capacitor; boost stays disconnected. This arrangement's available current is not verified. No home switch is installed and D6 is unused. The user verified smooth unloaded jogs and stop/release. `f` is counterclockwise and `r` clockwise viewed from the shaft end. A measured 32 jogs/revolution gives the working 4096-half-step calibration. Manual zero and angle positioning are user verified at a 2 ms half-step interval. There is no startup motion or automatic tracking.
+## Other commands
 
-## Manual zero and angles (current motor milestone)
+| Command + Enter | Action |
+| --- | --- |
+| `l` (lowercase L) | Print sensor readings and calculated direction |
+| `p` | Print estimated pointer position |
+| `f` / `r` | Counterclockwise / clockwise jog, 128 half-steps |
+| `0`–`360` | Move to an angle after zeroing; E=0, N=90, W=180, S=270 |
+| `?` | Help |
 
-Use the same `firmware/motor_jog` sketch and [manual-position instructions](docs/manual-position.md). Align an unloaded reference with East and send `z` + Enter. Then send an integer angle: `90`=North, `180`=West, `270`=South, `0`=East. Angle commands require zero after every reset or explicit stop. `p` reports the estimate; `s` stops immediately and clears zero. `f`/`r` remain 128-half-step jogs. Numeric moves take the shortest route, at most half a turn, then release the coils.
+Send one command at a time and wait for a move to complete. During a move, only `s` is accepted. `s` acts immediately without Enter; press Enter afterward to clear its discarded line. Manual jog, zero and angle commands turn tracking off. Any calibration capture also turns tracking off. A movement timeout stops and clears zero.
 
-The sensor sketch remains separate. Position is estimated from steps, not measured by a home switch. Unloaded motor rotation is verified; assembled pointer clearance and loaded positioning are not. Build, upload, serial output and acceptance checks are in docs/manual-position.md. On the Linux laptop, the installed CLI is `./bin/arduino-cli` and the verified serial port is `/dev/ttyUSB0` (recheck after reconnecting).
+## Hardware and limits
 
-## Light angle readout
+Sensors E/N/W/S use A0/A1/A2/A3. Driver IN1–IN4 use D2–D5. D6 is unused. See [HARDWARE.md](HARDWARE.md) for wiring/power. Sensors must have distinct views in E/N/W/S order to estimate direction; the upward-facing breadboard arrangement does not yet give reliable physical bearings. Calibration cannot remove shared light exposure. Final direction tuning and loaded operation wait for the housing.
 
-The existing motor-control sketch now accepts **`l` + Enter** while idle: print raw E/N/W/S and the calculated light angle, without moving the motor. It uses the verified calibration directly: x=E−W, y=N−S, angle=atan2(y,x), with East=0°, North=90°, West=180°, South=270°. The new readout still needs a hardware check. No calibration workflow, automatic tracking, or additional control framework is introduced.
+The current user-reported bench supply is Nano USB-fed 5V to sensors and driver VCC, common GND, and a 470 µF supply capacitor; boost/batteries are disconnected. Current capacity is unverified. Stop if the board resets, USB disconnects or anything overheats. Position is estimated from commanded steps, not measured feedback. If it stalls or is moved, realign and zero again. Do not use continuous shortest-path tracking with a mechanism or wiring that cannot rotate freely.
 
-The verified speed is now checked in as `JOG_INTERVAL_MS 2U`; existing build/upload commands and other manual commands are unchanged. Details: [manual-position.md](docs/manual-position.md).
+## Project files
+
+- `firmware/motor_jog/`: current complete firmware (C logic with an Arduino C++ bridge; the folder name is retained for compatibility).
+- `firmware/liahona/`: earlier standalone sensor diagnostic, not required for normal use.
+- `tests/`: native controller, calibration and application tests.
+- [Current development checks](docs/development.md), [hardware](HARDWARE.md), [measured calibration](docs/sensor-calibration.md).
+- Earlier milestone notes: [manual position](docs/manual-position.md), [VSCodium setup](docs/vscodium.md). The instructions above supersede older command/task lists.
+
+The root ESP-IDF CMake scaffolding is historical, not the Nano build system.

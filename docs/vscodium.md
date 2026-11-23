@@ -1,5 +1,8 @@
 # VSCodium: motor control workflow
 
+**Current operation:** see [README](../README.md): `sh run.sh` uploads and opens the monitor; `z` sets East, `t` starts tracking, `s` stops, optional `c` saves calibration. The milestone-specific instructions below are historical; current implementation/checks are in [development.md](development.md).
+
+
 **Current firmware:** manual zero and angle commands extend this same sketch. Follow [manual-position.md](manual-position.md) for the current protocol, expected output and acceptance checks. The initial jog procedure below records the prior milestone.
 
 VSCodium edits the source; Arduino CLI compiles, uploads and opens the serial port. No Arduino editor extension is required. The pure C stepping module is `firmware/motor_jog/jog.c`; `arduino_bridge.cpp` supplies Arduino pin/serial calls and setup()/loop(). The minimal `.ino` satisfies Arduino's sketch-folder naming convention.
