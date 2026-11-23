@@ -18,3 +18,5 @@ Open firmware/liahona/liahona.ino in Arduino IDE. Select Arduino Nano, ATmega328
 Every 250 ms expect E:raw/percent followed by N, W and S. Cover one sensor: its percentage should approach 0%; illuminate near the reference conditions: it should approach 100%. Under equal illumination compare all four and record residual mismatch. Calibration has been confirmed by the user; no further calibration is required for this milestone. No direction, filtering or motion code is included.
 
 2026-11-23: user confirms calibration verified. Retain these endpoints. The manual motor-control sketch now reuses them in a simple `l` diagnostic angle readout, with no motor movement; see manual-position.md.
+
+Current general firmware starts with these verified endpoints unless a valid saved profile exists. Optional `c` captures all four sensors for 30 seconds (cover then illuminate each), validates at least 100 raw counts per channel and saves the profile to EEPROM. No source editing or reflashing is needed to calibrate later. See the root README for normal use.

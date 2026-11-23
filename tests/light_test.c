@@ -22,6 +22,25 @@ int main(void) {
     for (unsigned i = 0; i < sizeof(expected) / sizeof(expected[0]); ++i) {
         assert(light_angle(cases[i]) == expected[i]);
     }
+    light_calibration profile = LIGHT_DEFAULT_CALIBRATION;
+    assert(light_calibration_valid(&profile));
+    const uint16_t checksum = light_calibration_checksum(&profile);
+    profile.covered[0]++;
+    assert(light_calibration_checksum(&profile) != checksum);
+    profile.bright[0] = profile.covered[0];
+    assert(!light_calibration_valid(&profile));
+    assert(light_angle_calibrated(cases[0], &profile) == -1);
+    profile = LIGHT_DEFAULT_CALIBRATION;
+    profile.bright[1] = 1024;
+    assert(!light_calibration_valid(&profile));
+    profile = LIGHT_DEFAULT_CALIBRATION;
+    profile.bright[2] = profile.covered[2] + 99;
+    assert(!light_calibration_valid(&profile));
+    profile = (light_calibration){{100, 100, 100, 100}, {900, 900, 900, 900}};
+    const uint16_t east[4] = {900, 100, 100, 100};
+    const uint16_t weak[4] = {510, 500, 500, 500};
+    assert(light_angle_calibrated(east, &profile) == 0);
+    assert(light_angle_calibrated(weak, &profile) == -1);
     puts("light tests passed: cardinal/diagonal angles, balanced inputs and clamping");
     return 0;
 }

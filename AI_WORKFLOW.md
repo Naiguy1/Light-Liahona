@@ -38,3 +38,7 @@ Current bench milestone (2026-11-23): separate firmware/motor_jog sketch, contro
 Current extension: serial manual zero and integer angle moves in the same motor_jog sketch. Use measured 4096 half-steps/revolution, f=CCW/r=CW viewed from shaft end. Keep it separate from sensor tracking. No EEPROM position restore or automatic homing; no installed home switch. Zero is required after reset/stop/timeout, and reported position is an open-loop estimate. See docs/manual-position.md for build/upload and unloaded checks.
 
 Keep subsequent implementation simple: reuse verified calibration and the user-tested 2 ms half-step interval. The current change adds only a one-shot `l` sensor-angle diagnostic to the existing motor sketch; manual movement remains explicit. No new recalibration routine or control framework.
+
+## Current firmware — flash once, configure through serial
+
+The user requests a general, usable firmware without source edits, and a simple workflow. Current README is authoritative for operation: `sh run.sh` or the single Liahona upload/monitor task, then z/t/s. Verified defaults remain available. An optional c command collects sensor minima/maxima for 30 seconds and saves valid values to EEPROM. No physical zero/position is persisted. See docs/development.md for current checks; earlier milestone restrictions on automatic tracking and adding a calibration routine are superseded by this explicit user request. Keep tracking opt-in after manual zero and test unloaded until assembled travel is established.
