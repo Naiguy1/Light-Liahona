@@ -1,12 +1,12 @@
 #include <Arduino.h>
 #include "jog.h"
+#include "commands.h"
 
-// Approved mapping for the intact spare ULN2003 board. IN5..IN7 unused.
 static const uint8_t MOTOR_PINS[] = {2, 3, 4, 5};
 static jog_state motor;
+static command_parser parser;
 
 static void applyOutputs() {
-    // Turn unwanted channels off before enabling wanted channels.
     for (uint8_t i = 0; i < 4; ++i) {
         if (!(motor.outputs & (1U << i))) digitalWrite(MOTOR_PINS[i], LOW);
     }
@@ -15,49 +15,90 @@ static void applyOutputs() {
     }
 }
 
+static void position() {
+    if (!motor.position_known) {
+        Serial.println(F("Position unknown; align with East, then send z + Enter."));
+        return;
+    }
+    const uint16_t tenths = jog_angle_tenths(&motor);
+    Serial.print(F("Estimated position: "));
+    Serial.print(tenths / 10);
+    Serial.print('.');
+    Serial.print(tenths % 10);
+    Serial.print(F(" deg CCW from East; half-steps="));
+    Serial.println(motor.position);
+}
+
 static void help() {
-    Serial.println(F("f = forward jog, r = reverse jog, s = stop/release, ? = help"));
-    Serial.println(F("128 half-steps per jog; direction and shaft angle uncalibrated."));
+    Serial.println(F("Commands + Enter: z=East zero, 0..360=angle, p=position, ?=help"));
+    Serial.println(F("f=CCW jog, r=CW jog (128 half-steps); s=STOP immediately"));
+    Serial.println(F("4096 half-steps/rev; angle moves require zero; test UNLOADED."));
+}
+
+static void handle(motor_command command) {
+    if (command.kind == COMMAND_NONE) return;
+    if (command.kind == COMMAND_STOP) {
+        jog_stop(&motor);
+        applyOutputs();
+        Serial.println(F("Stopped; coils OFF; zero cleared"));
+        return;
+    }
+    if (motor.active) {
+        Serial.println(F("Busy; command ignored (s stops)"));
+        return;
+    }
+    switch (command.kind) {
+        case COMMAND_FORWARD:
+        case COMMAND_REVERSE:
+            jog_start(&motor, command.kind == COMMAND_FORWARD ? 1 : -1, millis());
+            Serial.println(command.kind == COMMAND_FORWARD ? F("Jog CCW") : F("Jog CW"));
+            break;
+        case COMMAND_ZERO:
+            jog_set_zero(&motor);
+            Serial.println(F("Zero set: East 0.0 deg; coils OFF"));
+            break;
+        case COMMAND_ANGLE: {
+            const move_result result = jog_move_to(&motor, command.degrees, millis());
+            if (result == MOVE_NEEDS_ZERO) position();
+            else if (result == MOVE_AT_TARGET) Serial.println(F("Already at target; coils OFF"));
+            else if (result == MOVE_STARTED) {
+                Serial.print(F("Target "));
+                Serial.print(command.degrees == 360 ? 0 : command.degrees);
+                Serial.print(F(" deg; "));
+                Serial.print(motor.direction > 0 ? F("CCW; ") : F("CW; "));
+                Serial.print(motor.remaining);
+                Serial.println(F(" half-steps"));
+            } else Serial.println(F("Angle rejected"));
+            break;
+        }
+        case COMMAND_POSITION: position(); break;
+        case COMMAND_HELP: help(); break;
+        default: Serial.println(F("Invalid command; use z, 0..360, f, r, p, s or ?")); break;
+    }
 }
 
 void setup() {
-    // Preload LOW before switching each pin to output. No startup motion.
     for (uint8_t i = 0; i < 4; ++i) {
         digitalWrite(MOTOR_PINS[i], LOW);
         pinMode(MOTOR_PINS[i], OUTPUT);
     }
     jog_init(&motor);
+    command_init(&parser);
     Serial.begin(115200);
-    Serial.println(F("Liahona motor jog ready; coils OFF"));
+    Serial.println(F("Liahona manual position ready; coils OFF; zero required"));
     help();
 }
 
 void loop() {
-    // Process a bounded number of characters so serial traffic cannot starve stepping.
     for (uint8_t n = 0; n < 16 && Serial.available(); ++n) {
-        const char command = (char)Serial.read();
-        if (command == 's') {
-            jog_stop(&motor);
-            applyOutputs();
-            // Discard already queued motion commands after a stop.
-            while (Serial.available()) Serial.read();
-            Serial.println(F("Stopped; coils OFF"));
-            return;
-        }
-        if (command == 'f' || command == 'r') {
-            if (jog_start(&motor, command == 'f' ? 1 : -1, millis())) {
-                Serial.println(command == 'f' ? F("Jog forward") : F("Jog reverse"));
-            } else {
-                Serial.println(F("Busy; command ignored"));
-            }
-        } else if (command == '?' && !motor.active) {
-            help();
-        }
-        // Ignore CR/LF and all other characters. No unbounded command buffer.
+        handle(command_feed(&parser, (char)Serial.read()));
     }
     const uint8_t previousOutputs = motor.outputs;
     const jog_result result = jog_tick(&motor, millis());
     if (motor.outputs != previousOutputs) applyOutputs();
-    if (result == JOG_DONE) Serial.println(F("Jog complete; coils OFF"));
-    if (result == JOG_TIMED_OUT) Serial.println(F("Jog timeout; coils OFF"));
+    if (result == JOG_DONE) {
+        Serial.println(F("Move complete; coils OFF"));
+        position();
+    }
+    if (result == JOG_TIMED_OUT) Serial.println(F("Move timeout; coils OFF; zero cleared"));
 }

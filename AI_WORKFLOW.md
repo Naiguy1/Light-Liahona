@@ -34,3 +34,5 @@ For a confirmed ATmega328P Nano: Arduino IDE → Arduino AVR Boards → Arduino 
 Measured endpoints and installed resistor values are in docs/sensor-calibration.md. Keep normalization verification separate from motor milestones in docs/motor-bringup.md.
 
 Current bench milestone (2026-11-23): separate firmware/motor_jog sketch, controlled via Arduino CLI in VSCodium. Use intact spare driver, original IN1–IN4 mapping, USB-fed Nano 5V supply as recorded in HARDWARE.md. Keep D6 unused. Do not enable homing or tracking based on assumed switch hardware. See docs/vscodium.md for build/upload/serial checks.
+
+Current extension: serial manual zero and integer angle moves in the same motor_jog sketch. Use measured 4096 half-steps/revolution, f=CCW/r=CW viewed from shaft end. Keep it separate from sensor tracking. No EEPROM position restore or automatic homing; no installed home switch. Zero is required after reset/stop/timeout, and reported position is an open-loop estimate. See docs/manual-position.md for build/upload and unloaded checks.
