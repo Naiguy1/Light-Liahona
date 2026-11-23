@@ -4,9 +4,9 @@ An offline, battery-powered pointer that turns toward a dominant horizontal ligh
 
 ## Project status
 
-User reports successful heartbeat and four-channel raw sensor tests using **ATmega328P (Old Bootloader)**. Current Arduino sketch: [firmware/liahona/liahona.ino](firmware/liahona/liahona.ino), which adds preliminary endpoint normalization only. This new sketch still needs a build/upload and hardware check. Motor power remains disconnected.
+User reports successful heartbeat and four-channel raw sensor tests using **ATmega328P (Old Bootloader)**. Current Arduino sketch: [firmware/liahona/liahona.ino](firmware/liahona/liahona.ino), which adds preliminary endpoint normalization only. This new sketch still needs a build/upload and hardware check. Sensor calibration remains a separate sketch. A standalone motor-jog milestone is now available; see below.
 
-The root CMake files and main/main.c are historical ESP32 scaffolding, not the Nano project. Open the Arduino sketch directly.
+The root CMake files and main/ component are historical ESP32 scaffolding, not the Nano project (the old main.c has since been removed). Open the Arduino sketch directly.
 
 ## Documentation
 
@@ -32,3 +32,9 @@ Expect the startup line `Liahona normalized sensor test; motor power disconnecte
 - [Classic Nano hardware documentation](https://docs.arduino.cc/hardware/nano)
 - [Official Nano pinout](https://docs.arduino.cc/resources/pinouts/A000005-full-pinout.pdf)
 - [Arduino IDE](https://docs.arduino.cc/software/ide/)
+
+## Motor jog in VSCodium
+
+Follow [docs/vscodium.md](docs/vscodium.md) for Arduino CLI installation, compile/upload commands and serial checks. Open `firmware/motor_jog/motor_jog.ino` for the separate motor milestone. Most stepping logic is C (`jog.c`); the Arduino bridge is C++ (`arduino_bridge.cpp`). No extra motor libraries are required.
+
+On the intact spare ULN2003 board, D2–D5 connect to IN1–IN4. The user now powers driver VCC and the sensors from the Nano USB-fed 5V rail, with common GND and a 470 µF supply capacitor; boost stays disconnected. This arrangement's available current is not verified. No home switch is installed and D6 is unused. Each serial `f`/`r` command runs a bounded unloaded jog and releases the coils; `s` stops. There is no startup motion or automatic tracking. Hardware verification is pending.

@@ -14,7 +14,7 @@ Design approved by the user on 2026-11-20. Every assignment below is approved fo
 | ULN2003 IN2 | D3 | Driver input | User reported, 2026-11-20 |
 | ULN2003 IN3 | D4 | Driver input | User reported, 2026-11-20 |
 | ULN2003 IN4 | D5 | Driver input | User reported, 2026-11-20 |
-| Home switch | D6 | Normally-open contact to GND; active LOW | User reported, 2026-11-20 |
+| Optional home / zero input | D6 | Reserved; no switch installed | Not applicable |
 | Divider and external home pull-up supply | 5V | Nano regulated 5 V rail | User reported, 2026-11-20 |
 | Common ground | GND | Sensors, switch, driver and supply return | User reported, 2026-11-20 |
 
@@ -26,7 +26,7 @@ For each direction: **5V → photoresistor → signal junction → fixed resisto
 
 The user reports a 10 kΩ resistor in breadboard row 42 connected to ground. This does not establish which end is the signal junction. Connect the sensor and analog wire to the resistor's ungrounded end. Five-hole groups on opposite sides of the breadboard trench are separate; check rail continuity across any split.
 
-Home switch: D6 to switch COM, switch NO to GND. An external 10 kΩ resistor from D6 to 5V is the documented arrangement. If using internal `INPUT_PULLUP` instead, record that implementation choice; do not silently change the wiring record. Verify idle HIGH and pressed LOW before motion.
+No home switch is installed. D6 is reserved and must stay unused in the jog milestone. The ordinary on/off switch is for main power. A manual-zero button or an automatically actuated home switch may be added later as a separate milestone.
 
 ## Capacitors and available parts
 
@@ -38,7 +38,7 @@ Home switch: D6 to switch COM, switch NO to GND. An external 10 kΩ resistor fro
 
 ## Power
 
-Initial bring-up: Nano on USB; motor disconnected. For motor tests, use a separately verified 5 V motor supply with a common ground. Keep motor current out of Nano GPIO and its onboard regulator path; motor plugs into the ULN2003 board's five-wire socket.
+Current motor bench test: Nano on USB, its 5V rail feeding sensors and driver VCC; see the current arrangement below. A separately regulated motor supply with common ground is an alternative if USB power is inadequate. Keep motor current out of Nano GPIO and its onboard regulator path; motor plugs into the ULN2003 board's five-wire socket.
 
 Planned battery arrangement: two AA cells in series → verified 5 V boost converter. For a confirmed classic Nano, regulated 5 V can feed the 5V pin; do not feed this 5 V into VIN. The final boost must support the combined measured Nano and motor load. Grounds of Nano, ULN2003 and boost output must be connected. Verify module input/output labels and whether its ground is common before connecting battery return.
 
@@ -58,4 +58,11 @@ The ESP32 pin plan and `Liahona_Proposed_Wiring.png` are historical references, 
 - [Official Nano pinout](https://docs.arduino.cc/resources/pinouts/A000005-full-pinout.pdf)
 - [Official Nano power specifications](https://store.arduino.cc/products/arduino-nano)
 
-See [sensor-calibration.md](docs/sensor-calibration.md) for measured endpoints. Home pull-up implementation and switch function still need confirmation; use the Nano internal pull-up in a separate home-input milestone if no external pull-up is installed.
+See [sensor-calibration.md](docs/sensor-calibration.md) for measured endpoints. Any future switch implementation must be recorded and tested in a separate milestone.
+
+## Current bench arrangement — 2026-11-23 (supersedes earlier power/home assumptions)
+
+- The damaged IN1 board is set aside; user obtained female jumper cables and is using the intact spare ULN2003. Original mapping D2/D3/D4/D5 → IN1/IN2/IN3/IN4 applies; no channel-5 reroute.
+- Nano USB-fed 5V → breadboard positive rail → sensor dividers and driver VCC. Common GND joins Nano, sensor resistors and driver. The 470 µF capacitor is parallel across the driver supply, positive to +5V and striped negative to GND. Connect it near the driver supply wiring. Boost/battery supply stays disconnected. User reports assembly complete; no motor results supplied yet.
+- USB, cable and clone-board current capacity are unverified. Stop testing on resets, USB disconnects or heating; use an adequately rated separate regulated motor supply if needed. When using a separate supply with Nano on USB, join grounds and keep the positive rails separate.
+- No home switch is installed. D6 is reserved but unused. The ordinary switch is for main power; its installed placement is not confirmed. A manual-zero pushbutton or automatic home sensor is a future choice, not an existing feature.

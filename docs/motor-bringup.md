@@ -1,12 +1,12 @@
-# Motor bring-up plan
+# Motor bring-up
 
-These are planned, separate milestones, not implemented motor firmware. Approved mapping: D2 → IN1, D3 → IN2, D4 → IN3, D5 → IN4; home D6, active LOW.
+Current milestone: [standalone motor jog in VSCodium](vscodium.md). The intact spare ULN2003 uses D2 → IN1, D3 → IN2, D4 → IN3 and D5 → IN4. No home switch is installed; D6 remains unused. The on/off switch controls main power, not homing.
 
-1. Finish normalized sensor checks with motor power disconnected.
-2. Add only home-switch logging and debounce. Use D6 INPUT_PULLUP if the spare external pull-up is unavailable; explicitly record this choice. Confirm released HIGH / pressed LOW before motion.
-3. With power off, connect the 28BYJ-48 five-wire plug to the ULN2003 socket. Connect a verified regulated 5 V supply to driver power +/− and share driver GND with Nano GND. Nano stays on USB; leave driver +5 V separate from Nano 5V/VIN. Confirm driver labels and capacitor values/polarity. Use 470 µF (+ to +5V, − to GND) and 100 nF across the driver supply near the board. Verify supply voltage under load; boost capacity is unmeasured.
-4. Add an explicit, short bounded jog command with all four outputs initialized LOW before energizing the driver. No automatic startup movement. Start unloaded, with pointer/linkage detached if practical. Record coil sequence, direction, smooth movement, stops and coil release. If it only buzzes, stop and check power, plug and phase sequence before increasing speed.
-5. Measure motion per output revolution and available travel; do not assume an exact 2048/4096 step count or unrestricted rotation. Add bounded homing with maximum steps/time, switch debounce, release/backoff logic, stuck-switch handling and de-energize on fault. Test stop/fault behavior before attaching the mechanism.
-6. Integrate tracking only after jog and homing pass. Check interference in sensor readings and resets during motion, then test the battery supply under combined load.
+1. Build/upload the jog sketch; leave shaft unloaded and initialize with coils off.
+2. Confirm no startup movement, short `f` and `r` jogs, stop/release with `s`, and no USB resets or abnormal heating. Record observed direction and movement; do not assume an exact gearbox ratio or shaft angle.
+3. Decide between a manual starting reference and an installed home switch. Verify any new switch without movement first. Never run an automatic search with no home sensor.
+4. Measure usable travel and motion per revolution before attaching the mechanism. Add suitable limits and fault handling.
+5. Integrate direction estimation/tracking only after motor and position-reference milestones pass.
+6. Validate battery/boost operation later under measured combined load.
 
-A future motor change must document its actual build/upload commands, serial prompts and acceptance checks. Current sensor firmware does not exercise the driver or switch.
+The current USB-fed Nano 5V rail powers both driver VCC and sensors. Common GND and a 470 µF supply capacitor are required by this bench wiring plan; available current remains unverified. Boost/batteries stay disconnected. The jog has software step/time bounds, but no physical position feedback or hardware emergency stop. See vscodium.md for exact commands, output and checks.
