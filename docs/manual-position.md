@@ -35,12 +35,13 @@ Send **one command per line**, pressing Enter. CR, LF and CRLF are supported. Lo
 | `f` | One 128-half-step counterclockwise jog, even before zeroing |
 | `r` | One 128-half-step clockwise jog, even before zeroing |
 | `p` | Report the estimated position or explain that zero is required |
+| `l` | Read E/N/W/S and print the calculated light angle; no motor movement or zero required |
 | `s` | Stop/release immediately and clear the zero reference |
 | `?` | Help |
 
 A numeric move requires `z` after startup/reset. Busy commands, including `z`, are rejected rather than queued; only `s` is accepted during a move. Numbers outside the range and other invalid lines do not initiate movement. Successful `f`/`r` jogs after zero update the estimate. A normal completion releases all coils while preserving the estimate. Stop or timeout clears zero and requires physical realignment and another `z` before angle commands.
 
-The code chooses the shortest angular route, at most 2048 half-steps. An exact half-turn chooses counterclockwise. Targets round to the nearest half-step using 32-bit intermediate arithmetic. At 5 ms per half-step, a quarter-turn is about 5.1 seconds and a half-turn about 10.2 seconds. The elapsed-time bound scales with the requested move, plus margin; it is a software guard, not a hardware emergency stop or watchdog.
+The code chooses the shortest angular route, at most 2048 half-steps. An exact half-turn chooses counterclockwise. Targets round to the nearest half-step using 32-bit intermediate arithmetic. At the user-verified 2 ms per half-step, a quarter-turn is about 2.05 seconds and a half-turn about 4.1 seconds. The elapsed-time bound scales with the requested move, plus margin; it is a software guard, not a hardware emergency stop or watchdog.
 
 ## Unloaded acceptance check
 
@@ -77,3 +78,13 @@ cc -std=c11 -Wall -Wextra -Werror -Ifirmware/motor_jog tests/position_test.c fir
 ```
 
 Build validation: Arduino CLI 1.6.0 / AVR core 1.8.6 / Nano old-bootloader target passed (4586 bytes flash, 227 bytes static SRAM). Original jog and new position/parser tests passed; address/undefined-behavior checks also passed with leak detection disabled because the test container uses ptrace. No heap allocation is used. This new positioning firmware has not been uploaded or hardware verified by the assistant.
+
+## Light angle (simple diagnostic)
+
+Calibration endpoints and manual positioning were confirmed by the user; no recalibration step is needed. At idle, send `l` + Enter to read the four existing A0–A3 channels and print `E:... N:... W:... S:... Light angle: ... deg CCW from East`. This command never moves the motor and works before `z`. Other manual commands are unchanged.
+
+The C calculation in `light.c` clamps the verified endpoint normalization to 0–1000, computes x=East−West and y=North−South, then uses atan2(y,x). It prints a whole angle (East=0, North=90, West=180, South=270). Exactly balanced differences report `Light balanced; no direction`. This is a diagnostic angle, without filtering, confidence scoring or automatic movement. It does not establish a reliable direction under near-uniform illumination.
+
+Build/upload commands above are unchanged. With a dominant light at one sensor, send `l` and check that the printed angle corresponds to that direction; the motor should stay still. Calibration values remain E 165/967, N 155/956, W 165/971, S 75/932. Only the sensor-to-angle calculation is new; no new pins are assigned.
+
+Latest validation: Arduino CLI 1.6.0, AVR core 1.8.6, old-bootloader Nano target builds (6696 bytes flash, 251 bytes static SRAM). Jog and position/parser regression tests pass at 2 ms. New light-angle tests cover cardinal/diagonal inputs, clamping and balanced inputs; run `cc -std=c11 -Wall -Wextra -Werror -Ifirmware/motor_jog tests/light_test.c firmware/motor_jog/light.c -lm -o build/light_test` then `./build/light_test`. New light-angle output is pending a hardware check.

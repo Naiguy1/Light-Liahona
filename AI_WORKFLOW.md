@@ -25,7 +25,7 @@ Use the approved Nano design in README.md and HARDWARE.md. Read those files, doc
 
 ## Build and upload
 
-For a confirmed ATmega328P Nano: Arduino IDE → Arduino AVR Boards → Arduino Nano → matching processor/bootloader → actual port → Verify → Upload → Serial Monitor at sketch baud. Current sketch: firmware/liahona/liahona.ino. Select ATmega328P (Old Bootloader), confirmed by successful user uploads. Heartbeat and raw sensor measurements are user verified; normalized output is pending verification. Current ESP-IDF files are not an uploadable Nano project.
+For a confirmed ATmega328P Nano: Arduino IDE → Arduino AVR Boards → Arduino Nano → matching processor/bootloader → actual port → Verify → Upload → Serial Monitor at sketch baud. Current sketch: firmware/liahona/liahona.ino. Select ATmega328P (Old Bootloader), confirmed by successful user uploads. Heartbeat and raw sensor measurements are user verified; calibration is user verified. Current ESP-IDF files are not an uploadable Nano project.
 
 ## Task prompt
 
@@ -36,3 +36,5 @@ Measured endpoints and installed resistor values are in docs/sensor-calibration.
 Current bench milestone (2026-11-23): separate firmware/motor_jog sketch, controlled via Arduino CLI in VSCodium. Use intact spare driver, original IN1–IN4 mapping, USB-fed Nano 5V supply as recorded in HARDWARE.md. Keep D6 unused. Do not enable homing or tracking based on assumed switch hardware. See docs/vscodium.md for build/upload/serial checks.
 
 Current extension: serial manual zero and integer angle moves in the same motor_jog sketch. Use measured 4096 half-steps/revolution, f=CCW/r=CW viewed from shaft end. Keep it separate from sensor tracking. No EEPROM position restore or automatic homing; no installed home switch. Zero is required after reset/stop/timeout, and reported position is an open-loop estimate. See docs/manual-position.md for build/upload and unloaded checks.
+
+Keep subsequent implementation simple: reuse verified calibration and the user-tested 2 ms half-step interval. The current change adds only a one-shot `l` sensor-angle diagnostic to the existing motor sketch; manual movement remains explicit. No new recalibration routine or control framework.

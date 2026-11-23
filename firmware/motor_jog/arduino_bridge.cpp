@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "jog.h"
 #include "commands.h"
+#include "light.h"
 
 static const uint8_t MOTOR_PINS[] = {2, 3, 4, 5};
 static jog_state motor;
@@ -29,9 +30,29 @@ static void position() {
     Serial.println(motor.position);
 }
 
+static void reportLight() {
+    static const uint8_t SENSOR_PINS[] = {A0, A1, A2, A3};
+    static const char SENSOR_NAMES[] = {'E', 'N', 'W', 'S'};
+    uint16_t raw[4];
+    for (uint8_t i = 0; i < 4; ++i) {
+        raw[i] = (uint16_t)analogRead(SENSOR_PINS[i]);
+        Serial.print(SENSOR_NAMES[i]);
+        Serial.print(':');
+        Serial.print(raw[i]);
+        Serial.print(' ');
+    }
+    const int16_t angle = light_angle(raw);
+    if (angle < 0) Serial.println(F("Light balanced; no direction"));
+    else {
+        Serial.print(F("Light angle: "));
+        Serial.print(angle);
+        Serial.println(F(" deg CCW from East"));
+    }
+}
+
 static void help() {
     Serial.println(F("Commands + Enter: z=East zero, 0..360=angle, p=position, ?=help"));
-    Serial.println(F("f=CCW jog, r=CW jog (128 half-steps); s=STOP immediately"));
+    Serial.println(F("f=CCW jog, r=CW jog; l=light angle only; s=STOP immediately"));
     Serial.println(F("4096 half-steps/rev; angle moves require zero; test UNLOADED."));
 }
 
@@ -72,8 +93,9 @@ static void handle(motor_command command) {
             break;
         }
         case COMMAND_POSITION: position(); break;
+        case COMMAND_LIGHT: reportLight(); break;
         case COMMAND_HELP: help(); break;
-        default: Serial.println(F("Invalid command; use z, 0..360, f, r, p, s or ?")); break;
+        default: Serial.println(F("Invalid command; use z, 0..360, f, r, p, l, s or ?")); break;
     }
 }
 

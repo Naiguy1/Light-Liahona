@@ -31,6 +31,7 @@ motor_command command_feed(command_parser *parser, char input) {
                 case 'r': command.kind = COMMAND_REVERSE; break;
                 case 'z': command.kind = COMMAND_ZERO; break;
                 case 'p': command.kind = COMMAND_POSITION; break;
+                case 'l': command.kind = COMMAND_LIGHT; break;
                 case '?': command.kind = COMMAND_HELP; break;
             }
         }

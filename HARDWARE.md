@@ -9,7 +9,7 @@ Design approved by the user on 2026-11-20. Every assignment below is approved fo
 | East sensor junction | A0 | LDR / 10 kΩ divider junction | User reported, 2026-11-20 |
 | North sensor junction | A1 | LDR / 10 kΩ divider junction | User reported, 2026-11-20 |
 | West sensor junction | A2 | LDR / 10 kΩ divider junction | User reported, 2026-11-20 |
-| South sensor junction | A3 | LDR / 10 kΩ divider junction | User reported, 2026-11-20 |
+| South sensor junction | A3 | LDR / 6.5 kΩ divider junction | User reported, 2026-11-20 |
 | ULN2003 IN1 | D2 | Driver input | User reported, 2026-11-20 |
 | ULN2003 IN2 | D3 | Driver input | User reported, 2026-11-20 |
 | ULN2003 IN3 | D4 | Driver input | User reported, 2026-11-20 |
@@ -69,4 +69,6 @@ See [sensor-calibration.md](docs/sensor-calibration.md) for measured endpoints. 
 
 ## Motor calibration and manual reference — 2026-11-23
 
-User reports `f` CCW and `r` CW viewed from the shaft end, and 32 × 128-half-step jogs per output revolution. Working calibration: 4096 half-steps/revolution. No hardware home switch or zero button is installed; manual zero is a serial `z` command at the East reference. D6 remains unused. The new numeric positioning code is pending hardware validation; full assembled pointer travel and loaded behavior remain unknown. See [manual-position.md](docs/manual-position.md).
+User reports `f` CCW and `r` CW viewed from the shaft end, and 32 × 128-half-step jogs per output revolution. Working calibration: 4096 half-steps/revolution. No hardware home switch or zero button is installed; manual zero is a serial `z` command at the East reference. D6 remains unused. The user verified manual zero and cardinal-angle positioning, including operation at a 2 ms interval; full assembled pointer travel and loaded behavior remain unknown. See [manual-position.md](docs/manual-position.md).
+
+User confirmed the sensor calibration on 2026-11-23. Keep the recorded endpoints; no recalibration requested. The new diagnostic light-angle readout reuses A0–A3 and does not move the motor.
